@@ -5,9 +5,7 @@ import { TextInput } from '../../layouts/FormInput';
   
 
 export default function EmployeeList(){
-        // const { firstname, lastname, department, phone, role, employeed_date } = employees
         const employees = useSelector(state => state.employee)
-        // console.log(employees)
         return (
             <>
               <div className="card">
@@ -18,7 +16,7 @@ export default function EmployeeList(){
                             <div className="d-flex">
                               <input placeholder="Search" className="form-control"/>
                               {/* <Button label="Search" className="search-btn pace-btn pace-btn-primary ml-2" /> */}
-                              <style jsx>
+                              <style>
                                   {
                                     ` 
                                       .search-btn{
@@ -52,7 +50,7 @@ export default function EmployeeList(){
                             <tbody id="employeeList">
                                 {
                                     employees.map(({ firstname, lastname, department, phone, role, employeed_date }, index)=>(
-                                        <tr key={`${firstname}_${phone}`}>
+                                        <tr key={ index }>
                                             <td>{index+1}</td>
                                             <td>{firstname}</td>
                                             <td>{lastname}</td>

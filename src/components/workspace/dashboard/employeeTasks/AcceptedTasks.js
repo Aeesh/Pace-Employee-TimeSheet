@@ -1,126 +1,102 @@
-import React, { Component } from 'react';
-import {NavLink} from 'react-router-dom';
-import { connect } from 'react-redux';
-
-import { GET_ACCEPTED_TASKS } from '../../../../actions/types';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Table from '../../layouts/Table';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { selectFilter } from 'react-bootstrap-table2-filter';
+import { getTaskByStatus } from '../../../../actions/task/usersTasksByStatus';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../../../loader/Loader';
 
+const AcceptedTasks = () => {
+ const dispatch = useDispatch();
+  const { usersTasksByStatus, isFetching } = useSelector(state => state.usersTasksByStatus)
+  const history = useHistory();
+  
+  useEffect(() => {
+    dispatch(getTaskByStatus(2));
+  }, [])
 
+  console.log(getTaskByStatus, 'GETaccept')
+    console.log(usersTasksByStatus, 'accept')
 
-const taskHeader = [
-      {
-        dataField: 'id',
-        text: 'S/N'
-      },
-      {
-        dataField: 'task',
-        text: 'Task',
-      },
-      {
-        dataField: 'dueDate',
-        text: 'Due Date',
-      },
-      {
-        dataField: 'status',
-        text: 'status',
-      },
-      {
-        dataField: 'requests',
-        text: 'Requests',
-      },
-        
-      // {
-      
-      //   formatter: (cellContent, row) => {
-      //     return (
-      //       <>
-      //       <button
-      //         className="btn btn-danger btn-xs mr-3"
-      //         onClick={(e) => handleDelete(row)} 
-      //       >
-      //         Delete
-      //       </button>
-      //       <button
-      //         className="btn btn-danger btn-xs"
-      //         onClick={(e) => handleDelete(row)} 
-      //       >
-      //         Delete
-      //       </button>
-      //       </>
-      //     );
-      //   },
-      // },
-    
-];
-
-function handleDelete(rowId){
-  console.log(rowId);
-};
-
-const navigate = <>
-  <div className="btn-group">
-    <NavLink exact to="/dashboard/task/all-tasks" className="sidebar-link text-muted">
-      <i className="fa fa-sync text-gray"/>
-      {/* <span>sync</span> */}
-    </NavLink>
-  </div>
-  <div className="btn-group">
-    <a data-toggle="dropdown" href="#" className="btn mini blue">
-    More
-      <i className="fa fa-angle-down " />
-    </a>
-    <ul className="dropdown-menu">
-      <li><a href="#"><i className="fa fa-pencil" /> Mark as Read</a></li>
-      <li><a href="#"><i className="fa fa-ban" /> Spam</a></li>
-      <li className="divider" />
-      <li><a href="#"><i className="fa fa-trash-o" /> Delete</a></li>
-    </ul>                           
-  </div>
-</>
-class AcceptedTasks extends Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      ComponentDidMount() {
-        this.props.task();
-      }
+  // adds checkbox to each row
+  const selectRow = {
+    mode: 'checkbox',
+    headerColumnStyle: { backgroundColor: 'transparent' }
+  };
+  // styles each row
+  const rowStyle = {
+    cursor: 'pointer'
+  }
+  // routes to full task details page on double click
+  const taskDetails =  {
+    onClick: (e, row, rowIndex) => 
+    { 
+      history.push(`/dashboard/task/view-task/`+ row.taskID)
     }
-}
+  };
 
-  render() {
-    
-    const { acceptedTasks} = this.props;
-    const selectRow = {
-      mode: 'checkbox' 
-    };
-    return (
-      <div >
-        <Table
-          keyField='id'
-          title="Accepted Task"
-          data={ acceptedTasks }
-          columns={taskHeader}
-          bordered= { false }
-          selectRow = {selectRow}
-          pagination = { paginationFactory() }
-          controlHeader = { navigate }
-        />
-      </div>
+  // If the task list is been fetched from the server or not mounted on the ui, show the loader 
+  if(isFetching){
+    return(
+        <>
+            <Loader />
+        </>
     )
   }
+
+  return (
+    <div >
+      
+      <Table
+        keyField='id'
+        title="Accepted Task"
+        data={ usersTasksByStatus }
+        columns={taskHeader}
+        bordered= { false }
+        selectRow = { selectRow }
+        enableSearch = { true }
+        pagination = { paginationFactory() }
+        // controlHeader = { navigate }
+        rowEvents = { taskDetails }
+        noDataIndication={'No available task'}
+        filter={ filterFactory() }
+        rowStyle={ rowStyle }
+      />
+    </div>
+  )
 }
 
+const taskHeader = [
 
-const mapStateToProps = state => ({
-  acceptedTasks: state.acceptedTask
-})
+  {
+    dataField: 'taskName',
+    text: 'Title',
+    headerAttrs: {
+      hidden:true
+    }
+  },
+  {
+    dataField: 'endDate',
+    text: 'Due Date',
+    headerAttrs: {
+      hidden:true
+    }
+  },
+  {
+    dataField: 'documentsAttached',
+    text: 'Attachment',
+    formatter: (cell, row) => {
+      if(!cell){
+      return(
+        <i class="fa fa-paperclip" />
+      )}
+    },
+    headerAttrs: {
+      hidden:true
+    }
+  },
+];
 
-const mapDispatchToProps = dispatch => ({
-  acceptedTask: () => dispatch({ type:GET_ACCEPTED_TASKS })
-});
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-  )(AcceptedTasks);
+export default AcceptedTasks;

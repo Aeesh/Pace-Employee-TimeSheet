@@ -2,10 +2,9 @@ import { useEffect } from 'react';
 import Cards from './cards/Cards';
 import NotificationCards from './cards/NotificationCards';
 import MostActiveEmployee from './cards/MostActiveEmployee';
-import HourTimerScreen from './cards/HourTimerScreen';
+import HourTimerScreen from './timer/HourTimerScreen';
 
-
-const Index = () => {
+const Index = ({openTour}) => {
     useEffect(()=>{
         document.title = 'Company name | dashboard'
     })

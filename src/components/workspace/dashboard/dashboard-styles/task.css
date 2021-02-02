@@ -1,3 +1,8 @@
+.task-sidebar .fa{
+    font-size: 14px;
+}
+
+
 input[type=datetime-local] {
     width: 28% !important;
     padding: 5px;
@@ -47,9 +52,9 @@ a.task-duration{
     outline: none !important;
     border: 1px solid #eaeaea !important;
     width: 170px !important;
-    height: 34px;
-    font-size: 14px;
-    line-height: 1.4;
+    /* height: 34px; */
+    /* font-size: 14px; */
+    /* line-height: 1.4; */
 }
 .task-util input.search-box:focus{
     border: 1px solid #c4afaf !important;
@@ -87,7 +92,9 @@ ul.attachment-wrapper li{
     font-size: 13px;
     color: #797979;   
     background: #EFEFEF;
-    padding: 5px;
+    color: #EFEFEF;
+    background-color: #335eea;
+    padding: 6px;
 }
 
 .compose-btn-wrapper{

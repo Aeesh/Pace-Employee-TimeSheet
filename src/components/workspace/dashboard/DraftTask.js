@@ -1,145 +1,212 @@
-import React, { Component } from 'react';
-import {Formik, Form, Field,  ErrorMessage} from 'formik';
-import { TextInput, TextArea, DataList, Datalist } from '../../layouts/FormInput';
+// React
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {Formik, Form} from 'formik';
 
+// Layouts
+import { TextInput, TextArea } from '../../layouts/FormInput';
 import Button from '../../layouts/Button';
 
-class DraftTask extends Component {
-  render() {
+// Toast
+import { taskNotSent, taskSent } from '../../../toaster';
+
+// Actions
+import { assignTask } from '../../../actions/task/taskAction';
+import { getCompanyEmployees } from "../../../actions/employee/employeeAction";
+
+const DraftTask = () => {
+  const dispatch = useDispatch();
+  const { employees } = useSelector(state => state.employees)
+  const employeesDropDown = employees.map(({staffID, email}, index)=><option className="text-red" value={staffID} key={index}>{email}</option>)
+
+  useEffect(() => {
+    dispatch(getCompanyEmployees()) 
+  },[dispatch])
+
     return (
       <div>
-        <section class="">
-          <div class="row mb-4">
-            <div class="col-lg-12 mb-4">
-              <div class="card">
-                <div class="card-header">
-                  <h6 class="text-uppercase mb-0 pace-accent-color">Draft Task</h6>
-                </div>
-                <div class="card-body">
-                  <div class="card-text">
+        <section className="">
+          <div className="row mb-4">
+            <div className="col task-util compose-task">
+              <div className="card">
+              <header className="card-header wht-bg">
+                <h4 className="gen-case">
+                    Assign Task
+                </h4>
+              </header>
+                <div className="card-body">
+                  <div className="card-text">
                     <Formik
                       initialValues={{
-                        name: '',
-                        email: '',
-                        message: ''
+                        assignedID: '',
+                        taskName: '',
+                        taskDescription: '',
+                        documentsAttached: '',
+                        endDate: ''
                       }}
                         // validationSchema = {}
-                        onSubmit={ values=> console.log(values)}
+                        onSubmit={( values, action) =>{
+                          dispatch(assignTask(values))
+                          .then((response)=>{
+                            taskSent()
+                            action.resetForm()
+                          })
+                          .catch((error)=>{
+                            taskNotSent()
+                            action.setSubmitting(false)
+                          })
+                        }
+                      }
                     >
-                      {({touched, errors, values, handleSubmit, handleChange, isSubmitting}) => (
+                      {({touched, errors, values, handleSubmit, handleChange, isSubmitting, resetForm}) => (
                         <Form className="mt-0"  onSubmit={handleSubmit}>
+                          {/* <pre>{ JSON.stringify(values, null, 2) }</pre> */}
+                          <div className="compose-btn-wrapper">
+                            <Button 
+                              type="submit"
+                              className="btn btn-theme btn-sm"
+                              disabled={isSubmitting}
+                              label=" Assign"
+                              icon={`${isSubmitting ? "fa fa-spinner fa-spin" : "fa fa-check" }`}
+                            />                                   
+                            <Button 
+                              type="submit"
+                              label=" Draft"
+                              icon="fa fa-edit"
+                              className="btn btn-sm ml-2 mr-2 special pace-bg-primary"
+                            />     
+                            <Button 
+                              type="submit"
+                              label=" Discard"
+                              icon="fa fa-times"
+                              className="btn btn-sm pace-bg-accent"
+                              onClick={(()=>resetForm())} 
+                            />       
+                          </div>
                           <div className="form-group">
                             <TextInput 
-                              name = "subject"
-                              id = "subject"
-                              type = "text"
-                              value={values.subject}
-                              className = "form-control lead"
-                              labelClassName="lead"
-                              placeholder = "Subject:"
-                              onChange={handleChange}
+                                label = "To:"
+                                name = "assignedID"
+                                id = "assignedId" // id must not share same name with list
+                                list = "assignedID"
+                                type = "text"
+                                // placeholder="Start Typing"
+                                value={values.assignedID}
+                                className = "form-control lead"                                
+                                onChange={handleChange}
+                                autocomplete="off"
+                            />
+                            <datalist id="assignedID" >
+                              {/* only way to make the dropdown larger, the with is not accepted in the dropdown tag */}
+                              <option>
+                                Employees Suggestion:
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+                                &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp;
+
+                              </option>
+                                { employeesDropDown }
+                            </datalist>
+                          </div>                            
+                          <div className="form-group">
+                            <TextInput 
+                                label = "Subject:"
+                                name = "taskName"
+                                id = "taskName"
+                                type = "text"
+                                value={values.taskName}
+                                className = "form-control lead"                                
+                                onChange={handleChange}
                             />
                           </div>
                           <div className="form-group">
-                          <TextInput 
-                                name = "department"
-                                id = "department"
-                                type = "text"
-                                value={values.department}
-                                className = "form-control lead"
-                                labelClassName="lead"
-                                placeholder = "To:"
-                                onChange={handleChange}
-                              />
-                          </div>
-                          
-                          {/* <div className="form-group row">
-                            <div className="col-lg-6">
-                              <Field component="datalist" name="role"  onChange={handleChange} className="form-control">
-                                            <option selected>Choose...</option>
-                                            {availableRole}
-                              </Field>
-                              <DataList
-                               label = "Department"
-                               name = "department"
-                               id = "department"
-                               type = "text"
-                               value={values.department}
-                               className = "form-control lead"
-                               labelClassName="lead"
-                               placeholder = "Department"
-                               onChange={handleChange}
-                              > 
-                              <option selected>Choose...</option>
-                                            {availableRole}
-
-                              </DataList>
-                            </div>
-                          </div> */}
-                            
-                          <div className="form-group">
                               <TextArea 
+                                label = "Task description"
                                 name = "taskDescription"
                                 id = "task-description"
                                 value = {values.taskDescription}
-                                className= "form-control lead"
-                                labelClassName="lead"
+                                className= "form-control lead"                               
                                 rows = "4"
                                 // cols = "57"
                                 resize = "none"
-                                placeholder = "please drop your message here"
                                 onChange={handleChange} 
                               />
                           </div>
-                            
                           <div className="form-group row">
                             <div className="col-sm-6">
                               <TextInput 
                                   label = "Attachment"
-                                  name = "file"
-                                  id = "file"
+                                  name = "documentsAttached"
+                                  id = "documentsAttached"
                                   type = "file"
-                                  value={values.file}
-                                  className = "form-control lead"
-                                  labelClassName="lead"
+                                  value={values.documentsAttached}
+                                  className = "lead"
                                   onChange={handleChange}
                               />
                             </div>
                             <div className="col-sm-6">
                               <TextInput 
                                   label = "Due Date"
-                                  name = "dueDate"
+                                  name = "endDate"
                                   id = "due-date"
-                                  type="datetime-local"
-                                  value={values.dueDate}
-                                  className = "form-control lead"
-                                  labelClassName="lead"
+                                  type="date"
+                                  value={values.endDate}
+                                  className = "form-control lead"     
                                   onChange={handleChange}
                               />
                             </div>
                           </div>
-                          <div className="form-group row">
-                            <div className="col-sm-1 px-3">
-                              <Button 
-                                type="submit"
-                                label="Send"
-                                className="btn pace-btn-primary" 
-                              />
-                            </div>
-                            <div className="col-sm-1">
-                              <Button 
-                                type="submit"
-                                label="Draft"
-                                className="btn pace-btn-grey" 
-                              />
-                            </div>
-                            <div className="col-sm-1">
+                          <div className="d-none compose-btn mt-4">
                             <Button 
-                                type="submit"
-                                label="Discard"
-                                className="btn pace-btn-accent" 
-                            />
-                            </div>
+                              type="submit"
+                              className="btn btn-theme btn-sm"
+                              disabled={isSubmitting}
+                              label={isSubmitting ? 
+                                (
+                                  <span><i className="fa fa-spinner fa-spin"></i> Sending</span>
+                                ) : (
+                                  <span><i className="fa fa-check"></i> Assign</span>
+                              )}
+                            />         
+                            <Button 
+                              type="submit"
+                              label=" Draft"
+                              icon="fa fa-edit"
+                              className="btn btn-sm ml-2 mr-2 special"
+                            />                           
+                            <Button 
+                              type="submit"
+                              label=" Discard"
+                              icon="fa fa-times"
+                              className="btn btn-sm pace-bg-accent"
+                              onClick={(()=>resetForm())} 
+                            />   
                           </div>
                         </Form>
                       )}
@@ -154,6 +221,5 @@ class DraftTask extends Component {
       </div>
     )
   }
-}
 
 export default DraftTask;

@@ -1,0 +1,89 @@
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+  }
+  
+  /* The form - hidden by default */
+  #hide-form{
+    display: none; 
+  }
+
+  #show-form{
+    display: block !important;
+  }
+
+
+  .form-popup {
+    position: fixed;
+    bottom: 0;
+    right: 40px;
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+  }
+
+  /* Form popdown btn (Times) */
+  .form-popdown-btn{
+    float: right;
+    cursor: pointer;
+    font-size: 17px;
+  }
+
+  .form-popdown-btn:hover{
+    transform: scale(0.9);
+  }
+  
+  /* Add styles to the form container */
+  .todo-form-container {
+    /* max-width: 300px; */
+    /* padding: 10px; */
+    background-color: white;
+    text-align: left;
+  }
+
+  .todo-form-wrapper{
+    padding: 10px;
+  }
+
+  .todo-form-container input[type=text],
+    .todo-form-container input[type=datetime-local]{
+    width: 100% !important;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: #f1f1f1;
+    background-color: #DADAD9;
+  }
+
+  .todo-form-container input[type=text]:focus, .todo-form-container input[type=datetime-local]:focus {
+    background-color: #dddddd;
+    outline: none;
+  }
+  
+  /* Set a style for the submit/login button */
+  .todo-form-container .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
+  }
+  
+  
+  /* Add some hover effects to buttons */
+  .todo-form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+  }
+  

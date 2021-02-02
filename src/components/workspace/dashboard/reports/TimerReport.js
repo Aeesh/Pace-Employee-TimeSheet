@@ -59,17 +59,15 @@ const Header = [
 ];
 
 
-function handleDelete(rowId){
-  console.log(rowId);
-};
+// function handleDelete(rowId){
+//   console.log(rowId);
+// };
 
 
 const TimerReport = () => {
     const usersDetails = useSelector(state => state.timerReport)  
-    console.log(usersDetails)
-
     return (
-        // <div className="container-fluid px-xl-5">
+        <div className="container-fluid py-5">
           <Table
             keyField='id'
             title="Timer Report"
@@ -78,7 +76,7 @@ const TimerReport = () => {
             bordered= { false }
             pagination = { paginationFactory() }
           />
-        // </div>
+        </div>
     )
 }
 
